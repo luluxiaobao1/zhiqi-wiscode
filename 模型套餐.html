@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>模型套餐</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", "Microsoft YaHei", sans-serif;
+    background: #fff;
+    color: #1f2329;
+    font-size: 14px;
+  }
+  .window {
+    display: flex;
+    height: 100vh;
+    border: 1px solid #d0d0d0;
+    overflow: hidden;
+  }
+
+  /* ===================== 左侧边栏 ===================== */
+  .sidebar {
+    width: 280px;
+    min-width: 280px;
+    background: #ececee;
+    border-right: 1px solid #ddd;
+    padding: 14px 16px 20px;
+    overflow-y: auto;
+  }
+  .traffic-lights { display: flex; gap: 8px; margin-bottom: 22px; padding-left: 2px; }
+  .traffic-lights span { width: 13px; height: 13px; border-radius: 50%; background: #c9c9cc; }
+
+  .back-btn {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 15px; color: #3a3f45; cursor: pointer;
+    margin-bottom: 16px; padding: 2px 4px;
+  }
+  .back-btn .arrow { font-size: 17px; color: #5a5f66; }
+
+  .search-box {
+    display: flex; align-items: center; gap: 8px;
+    background: #fff; border: 1px solid #e0e0e2; border-radius: 8px;
+    padding: 8px 12px; margin-bottom: 22px;
+    color: #9aa0a6; font-size: 14px;
+  }
+  .search-box svg { flex-shrink: 0; }
+
+  .nav-group-title {
+    font-size: 13px; color: #8f959e;
+    margin: 18px 0 6px; padding-left: 6px;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 9px 10px; border-radius: 8px;
+    font-size: 15px; color: #3a3f45; cursor: pointer;
+    user-select: none;
+  }
+  .nav-item:hover { background: #e2e2e5; }
+  .nav-item.selected { background: #dfdfe2; }
+  .nav-item.active-red { color: #e02020; font-weight: 600; }
+  .nav-item .icon {
+    width: 20px; display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0; color: #3a3f45;
+  }
+  .nav-item.active-red .icon { color: #e02020; }
+  .nav-item .icon svg { display: block; }
+
+  /* ===================== 步骤标注 ===================== */
+  .step-mark { position: relative; outline: 2.5px solid #e02020; outline-offset: 2px; border-radius: 8px; }
+  .step-mark::after {
+    content: attr(data-step);
+    position: absolute; top: -11px; right: -11px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: #e02020; color: #fff;
+    font-size: 13px; font-weight: 700; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 5;
+  }
+  .buy-step { display: inline-flex; }
+  .op-mark { display: inline-block; padding: 6px 8px; }
+
+  /* ===================== 主内容区 ===================== */
+  .main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 60px 60px 40px;
+    background: #fff;
+  }
+  .page-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 24px; flex-wrap: wrap; gap: 16px;
+  }
+  .page-title h1 { font-size: 22px; font-weight: 700; margin-bottom: 10px; }
+  .page-title .sub { font-size: 15px; color: #4a4f55; }
+  .page-title .sub a { color: #2440f0; text-decoration: none; font-weight: 600; }
+
+  .header-actions { display: flex; align-items: center; gap: 22px; padding-top: 6px; }
+
+  /* 需求说明标注（醒目高亮，点击展开说明） */
+  .doc-tip {
+    position: relative; display: inline-flex; align-items: center; gap: 4px;
+    cursor: pointer;
+    background: linear-gradient(135deg, #ff6a5e, #e02020);
+    color: #fff; border-radius: 20px; padding: 5px 12px 5px 8px;
+    font-size: 13px; font-weight: 700; line-height: 1;
+    box-shadow: 0 2px 8px rgba(224,32,32,.45);
+    animation: doc-pulse 1.6s ease-in-out infinite;
+  }
+  .doc-tip::before { content: "说明"; order: 2; }
+  @keyframes doc-pulse {
+    0%, 100% { box-shadow: 0 2px 8px rgba(224,32,32,.45); }
+    50% { box-shadow: 0 0 0 6px rgba(224,32,32,.18); }
+  }
+  .doc-tip svg { display: block; }
+  .doc-pop {
+    display: none; position: absolute; left: 0; top: calc(100% + 12px);
+    background: #fff; color: #1f2329; font-size: 14px; font-weight: 400;
+    line-height: 1.6; padding: 18px 20px; border-radius: 12px;
+    border: 1.5px solid #e02020;
+    z-index: 20; box-shadow: 0 8px 24px rgba(0,0,0,.18);
+    width: 460px; cursor: default;
+  }
+  .doc-tip.open .doc-pop { display: block; }
+
+  /* 说明弹层内的流程图 */
+  .flow-diagram { display: flex; align-items: center; gap: 0; margin-top: 4px; }
+  .flow-node {
+    background: #f2f3f5; border: 1.5px solid #c9ccd1; border-radius: 12px;
+    padding: 18px 20px; font-size: 15px; color: #1f2329; text-align: center;
+    line-height: 1.5;
+  }
+  .flow-node.src { min-width: 96px; align-self: center; }
+  .flow-right { display: flex; flex-direction: column; gap: 18px; }
+  .flow-arrow { display: flex; align-items: center; flex-shrink: 0; }
+  .refresh-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: transparent; border: none; border-radius: 8px;
+    padding: 8px 12px; font-size: 14px; color: #6b7178; cursor: pointer;
+    white-space: nowrap;
+    transition: background .15s, color .15s;
+  }
+  .refresh-btn svg { flex-shrink: 0; }
+  .refresh-btn:hover { background: #f2f3f5; color: #1f2329; }
+  .buy-btn-wrap {
+    border: 3px solid #e02020; border-radius: 10px; padding: 6px;
+  }
+  .buy-btn {
+    background: #fff; border: 1px solid #c9ccd1; border-radius: 8px;
+    padding: 10px 34px; font-size: 15px; color: #1f2329; cursor: pointer;
+    white-space: nowrap;
+  }
+  .buy-btn:hover { border-color: #2440f0; color: #2440f0; }
+
+  /* ===================== 表格卡片 ===================== */
+  .table-card {
+    border: 1px solid #e8eaed; border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    overflow: hidden;
+  }
+  .table-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; min-width: 900px; }
+  thead th {
+    text-align: left; font-size: 14px; font-weight: 600; color: #1f2329;
+    background: #fafbfc; padding: 14px 20px;
+    border-bottom: 1px solid #eceef1;
+    white-space: nowrap;
+  }
+  tbody td {
+    padding: 22px 20px; vertical-align: middle;
+    border-bottom: 1px solid #eef0f3;
+    font-size: 14px;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+
+  .pkg-name { font-size: 15px; color: #1f2329; margin-bottom: 8px; }
+  .pkg-desc { font-size: 13px; color: #9aa0a6; }
+
+  .quota-title { font-weight: 700; font-size: 14px; margin-bottom: 10px; }
+  .quota-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .quota-row:last-child { margin-bottom: 0; }
+  .quota-label { color: #9aa0a6; font-size: 13px; width: 92px; flex-shrink: 0; }
+  .quota-bar {
+    width: 120px; height: 6px; border-radius: 3px;
+    background: #e8eaed; overflow: hidden; flex-shrink: 0;
+  }
+  .quota-bar .fill { height: 100%; background: #2440f0; border-radius: 3px; }
+  .quota-value { font-size: 13px; color: #3a3f45; white-space: nowrap; }
+
+  .valid-row { margin-bottom: 8px; white-space: nowrap; }
+  .valid-row:last-child { margin-bottom: 0; }
+  .valid-label { color: #9aa0a6; }
+  .valid-time { font-weight: 700; color: #1f2329; }
+
+  .op-link { color: #2440f0; text-decoration: none; font-size: 14px; cursor: pointer; }
+  .op-link + .op-link { margin-left: 22px; }
+  .op-link:hover { text-decoration: underline; }
+
+  /* 模拟横向滚动条 */
+  .fake-hscroll {
+    height: 10px; margin: 4px 12px 8px;
+    background: #f1f1f3; border-radius: 5px; position: relative;
+  }
+  .fake-hscroll .thumb {
+    position: absolute; left: 0; top: 0; height: 10px; width: 85%;
+    background: #b8b8bc; border-radius: 5px;
+  }
+
+  /* ===================== 分页 ===================== */
+  .pagination {
+    display: flex; align-items: center; justify-content: flex-end;
+    gap: 14px; padding: 16px 20px; border-top: 1px solid #eef0f3;
+    font-size: 14px; color: #3a3f45;
+  }
+  .pagination .arrow { color: #b0b3b8; cursor: pointer; font-size: 15px; }
+  .pagination .page-num {
+    border: 1px solid #2440f0; color: #2440f0;
+    border-radius: 6px; min-width: 30px; height: 30px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+<div class="window">
+  <!-- 左侧边栏 -->
+  <aside class="sidebar">
+    <div class="traffic-lights"><span></span><span></span><span></span></div>
+
+    <div class="back-btn"><span class="arrow">←</span><span>返回应用</span></div>
+
+    <div class="search-box">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" stroke-width="2">
+        <circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.5" y2="16.5"></line>
+      </svg>
+      <span>搜索设置...</span>
+    </div>
+
+    <div class="nav-group-title">个人</div>
+    <div class="nav-item"><span class="icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33 1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82 1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>常规</div>
+    <div class="nav-item"><span class="icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></span>个人资料</div>
+    <div class="nav-item"><span class="icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="11" rx="2"/><path d="M12 8V5"/><circle cx="12" cy="4" r="1"/><path d="M9 13h.01M15 13h.01"/></svg></span>模型配置</div>
+    <div class="nav-item selected step-mark" data-step="1" onclick="location.href='模型套餐.html'"><span class="icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v9h9"/></svg></span>模型套餐</div>
+    <div class="nav-item"><span class="icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18c1.2 0 2-.9 2-2 0-.6-.2-1-.6-1.4-.4-.4-.6-.8-.6-1.4 0-1.1.9-2 2-2h2.2A4 4 0 0 0 21 10c0-3.9-4-7-9-7z"/><circle cx="7.5" cy="11.5" r=".5"/><circle cx="10" cy="7.5" r=".5"/><circle cx="14.5" cy="7.5" r=".5"/></svg></span>外观</div>
+    <div class="nav-item"><span class="icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 10h.01M11 10h.01M15 10h.01M7 14h10"/></svg></span>键盘快捷键</div>
+    <div class="nav-item step-mark" data-step="3" onclick="location.href='用量.html'"><span class="icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16h16"/><path d="M8 16v-5M12 16V8M16 16v-3"/></svg></span>用量</div>
+    <div class="nav-item"><span class="icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9a6 6 0 1 0-12 0c0 6-2 7-2 7h16s-2-1-2-7"/><path d="M10.3 20a2 2 0 0 0 3.4 0"/></svg></span>通知</div>
+
+    <div class="nav-group-title">集成</div>
+    <div class="nav-item"><span class="icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="11" height="11" rx="1.5"/><path d="M9 9V5.5A1.5 1.5 0 0 1 10.5 4H18a1.5 1.5 0 0 1 1.5 1.5V13a1.5 1.5 0 0 1-1.5 1.5h-3"/></svg></span>MCP &amp; Skills</div>
+    <div class="nav-item"><span class="icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a13.5 13.5 0 0 1 0 18a13.5 13.5 0 0 1 0-18z"/></svg></span>浏览器</div>
+    <div class="nav-item"><span class="icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l5 5-5 5"/><path d="M12 18h8"/></svg></span>终端</div>
+    <div class="nav-item"><span class="icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/></svg></span>手机控制</div>
+    <div class="nav-item"><span class="icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v5c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/></svg></span>权限控制</div>
+
+    <div class="nav-group-title">编码</div>
+    <div class="nav-item"><span class="icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="5" r="2.2"/><circle cx="6" cy="19" r="2.2"/><circle cx="18" cy="9" r="2.2"/><path d="M6 7.2v9.6"/><path d="M18 11.2c0 3-3 4.3-6 4.3H8"/></svg></span>Git</div>
+    <div class="nav-item"><span class="icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l5 5-5 5"/><path d="M12 18h8"/></svg></span>环境</div>
+    <div class="nav-item"><span class="icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></span>诊断</div>
+
+    <div class="nav-group-title">已归档</div>
+    <div class="nav-item"><span class="icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8"/><path d="M10 12h4"/></svg></span>已归档对话</div>
+  </aside>
+
+  <!-- 主内容区 -->
+  <main class="main">
+    <div class="page-header">
+      <div class="page-title">
+        <h1>模型套餐</h1>
+        <div class="sub">展示当前账号在<a href="#">智企</a>购买的套餐</div>
+      </div>
+      <div class="header-actions">
+        <span class="doc-tip" onclick="this.classList.toggle('open'); event.stopPropagation();">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-5"/><circle cx="12" cy="8.2" r=".6" fill="currentColor"/></svg>
+          <span class="doc-pop" onclick="event.stopPropagation();">
+            <div style="font-weight:700; margin-bottom:12px;">点击新开页面跳转到智企</div>
+            <div class="flow-diagram">
+              <div class="flow-node src">Wiscode</div>
+              <div class="flow-arrow">
+                <svg width="70" height="120" viewBox="0 0 70 120" fill="none">
+                  <path d="M64 30 H38 a6 6 0 0 0 -6 6 v48 a6 6 0 0 0 6 6 H64" stroke="#b0b3b8" stroke-width="1.5"/>
+                  <path d="M32 60 H10" stroke="#b0b3b8" stroke-width="1.5"/>
+                  <path d="M10 60 l8 -5 v10 z" fill="#6b7178"/>
+                </svg>
+              </div>
+              <div class="flow-right">
+                <div class="flow-node">1、成员套餐列表<br>查询接口</div>
+                <div class="flow-node">2、套餐购买后<br>回调接口</div>
+              </div>
+            </div>
+          </span>
+        </span>
+        <button class="refresh-btn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v6h-6"/></svg>
+          刷新
+        </button>
+        <span class="step-mark buy-step" data-step="2"><button class="buy-btn" onclick="window.open('智企AI计划.html','_blank')">购买模型</button></span>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 24%;">套餐</th>
+              <th style="width: 34%;">额度限额</th>
+              <th style="width: 26%;">有效期</th>
+              <th style="width: 16%;">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="pkg-name">360专用海外高级套餐_hvA8h</div>
+                <div class="pkg-desc">360专用海外高级套餐</div>
+              </td>
+              <td>
+                <div class="quota-title">积分限制</div>
+                <div class="quota-row">
+                  <span class="quota-label">每五小时额度:</span>
+                  <span class="quota-bar"><span class="fill" style="width:0%"></span></span>
+                  <span class="quota-value">0/20,000 (0%)</span>
+                </div>
+                <div class="quota-row">
+                  <span class="quota-label">每周额度:</span>
+                  <span class="quota-bar"><span class="fill" style="width:0%"></span></span>
+                  <span class="quota-value">0/40,000 (0%)</span>
+                </div>
+                <div class="quota-row">
+                  <span class="quota-label">每月额度:</span>
+                  <span class="quota-bar"><span class="fill" style="width:0%"></span></span>
+                  <span class="quota-value">0/80,000 (0%)</span>
+                </div>
+              </td>
+              <td>
+                <div class="valid-row"><span class="valid-label">生效:</span> <span class="valid-time">2026/07/03 12:46:32</span></div>
+                <div class="valid-row"><span class="valid-label">到期:</span> <span class="valid-time">2026/08/03 12:46:32</span></div>
+              </td>
+              <td>
+                <span class="step-mark op-mark" data-step="2"><a class="op-link" href="智企AI计划.html" target="_blank">API Key</a><a class="op-link" href="智企AI计划.html" target="_blank">模型配置</a></span>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <div class="pkg-name">体验套餐_9Enig</div>
+                <div class="pkg-desc">通用体验套餐</div>
+              </td>
+              <td>
+                <div class="quota-title">积分限制</div>
+                <div class="quota-row">
+                  <span class="quota-label">每五小时额度:</span>
+                  <span class="quota-bar"><span class="fill" style="width:0%"></span></span>
+                  <span class="quota-value">0/1,000 (0%)</span>
+                </div>
+                <div class="quota-row">
+                  <span class="quota-label">每周额度:</span>
+                  <span class="quota-bar"><span class="fill" style="width:0%"></span></span>
+                  <span class="quota-value">0/2,000 (0%)</span>
+                </div>
+                <div class="quota-row">
+                  <span class="quota-label">每月额度:</span>
+                  <span class="quota-bar"><span class="fill" style="width:0%"></span></span>
+                  <span class="quota-value">0/4,000 (0%)</span>
+                </div>
+              </td>
+              <td>
+                <div class="valid-row"><span class="valid-label">生效:</span> <span class="valid-time">2026/06/26 18:58:22</span></div>
+                <div class="valid-row"><span class="valid-label">到期:</span> <span class="valid-time">2026/07/26 18:58:22</span></div>
+              </td>
+              <td>
+                <span class="step-mark op-mark" data-step="2"><a class="op-link" href="智企AI计划.html" target="_blank">API Key</a><a class="op-link" href="智企AI计划.html" target="_blank">模型配置</a></span>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <div class="pkg-name">体验套餐</div>
+                <div class="pkg-desc">通用体验套餐</div>
+              </td>
+              <td>
+                <div class="quota-title">积分限制</div>
+                <div class="quota-row">
+                  <span class="quota-label">每五小时额度:</span>
+                  <span class="quota-bar"><span class="fill" style="width:0%"></span></span>
+                  <span class="quota-value">0/10 (0%)</span>
+                </div>
+                <div class="quota-row">
+                  <span class="quota-label">每周额度:</span>
+                  <span class="quota-bar"><span class="fill" style="width:0%"></span></span>
+                  <span class="quota-value">0/20 (0%)</span>
+                </div>
+                <div class="quota-row">
+                  <span class="quota-label">每月额度:</span>
+                  <span class="quota-bar"><span class="fill" style="width:0%"></span></span>
+                  <span class="quota-value">0/40 (0%)</span>
+                </div>
+              </td>
+              <td>
+                <div class="valid-row"><span class="valid-label">生效:</span> <span class="valid-time">2026/06/25 15:42:07</span></div>
+                <div class="valid-row"><span class="valid-label">到期:</span> <span class="valid-time">2026/07/25 15:42:07</span></div>
+              </td>
+              <td>
+                <span class="step-mark op-mark" data-step="2"><a class="op-link" href="智企AI计划.html" target="_blank">API Key</a><a class="op-link" href="智企AI计划.html" target="_blank">模型配置</a></span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="fake-hscroll"><span class="thumb"></span></div>
+
+      <div class="pagination">
+        <span>共5条</span>
+        <span class="arrow">‹</span>
+        <span class="page-num">1</span>
+        <span class="arrow">›</span>
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>
