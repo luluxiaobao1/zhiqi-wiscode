@@ -755,26 +755,32 @@
 
             <!-- 流程图二：智企提供给 Wiscode 的接口 -->
             <div class="flow-block-title" style="margin-top:44px;">智企提供的对接接口</div>
-            <svg class="flow-svg" width="620" height="390" viewBox="0 0 890 558" fill="none" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif">
+            <svg class="flow-svg" width="700" height="560" viewBox="0 0 900 770" fill="none" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif">
                 <!-- Wiscode -->
-                <rect x="4" y="182" width="294" height="196" rx="20" fill="#f4f5f7" stroke="#c9ccd3" stroke-width="2"/>
-                <text x="151" y="292" font-size="30" fill="#1f2329" text-anchor="middle">Wiscode</text>
-                <!-- 汇聚线 -->
-                <path d="M528 80 H418 V280 M528 280 H418 M528 470 H418 V280" stroke="#9aa0a8" stroke-width="2" fill="none"/>
-                <line x1="418" y1="280" x2="316" y2="280" stroke="#9aa0a8" stroke-width="2"/>
-                <path d="M304 280 l14 -8 v16 z" fill="#9aa0a8"/>
+                <rect x="4" y="290" width="294" height="196" rx="24" fill="#f4f5f7" stroke="#c9ccd3" stroke-width="2"/>
+                <text x="151" y="398" font-size="30" fill="#1f2329" text-anchor="middle">Wiscode</text>
+                <!-- 汇聚线：4个框 -> 主干 -> Wiscode -->
+                <path d="M528 90 H418 V388 M528 288 H418 M528 486 H418 M528 682 H418 V388" stroke="#9aa0a8" stroke-width="2" fill="none"/>
+                <line x1="418" y1="388" x2="316" y2="388" stroke="#9aa0a8" stroke-width="2"/>
+                <path d="M304 388 l14 -8 v16 z" fill="#9aa0a8"/>
                 <!-- 接口1 -->
-                <rect x="530" y="4" width="340" height="152" rx="20" fill="#f4f5f7" stroke="#c9ccd3" stroke-width="2"/>
-                <text x="700" y="70" font-size="28" fill="#1f2329" text-anchor="middle">1、成员套餐列表</text>
-                <text x="700" y="112" font-size="28" fill="#1f2329" text-anchor="middle">查询接口</text>
+                <rect x="530" y="4" width="366" height="172" rx="20" fill="#f4f5f7" stroke="#c9ccd3" stroke-width="2"/>
+                <text x="713" y="62" font-size="28" fill="#1f2329" text-anchor="middle">1、内置的内外模型查</text>
+                <text x="713" y="102" font-size="28" fill="#1f2329" text-anchor="middle">询接口</text>
+                <text x="713" y="146" font-size="24" fill="#6b7178" text-anchor="middle">没有智企自动创建</text>
                 <!-- 接口2 -->
-                <rect x="530" y="204" width="340" height="152" rx="20" fill="#f4f5f7" stroke="#c9ccd3" stroke-width="2"/>
-                <text x="700" y="270" font-size="28" fill="#1f2329" text-anchor="middle">2、套餐购买后</text>
-                <text x="700" y="312" font-size="28" fill="#1f2329" text-anchor="middle">回调接口</text>
+                <rect x="530" y="202" width="366" height="172" rx="20" fill="#f4f5f7" stroke="#c9ccd3" stroke-width="2"/>
+                <text x="713" y="260" font-size="28" fill="#1f2329" text-anchor="middle">2、成员套餐信息</text>
+                <text x="713" y="300" font-size="28" fill="#1f2329" text-anchor="middle">查询接口</text>
+                <text x="713" y="344" font-size="24" fill="#6b7178" text-anchor="middle">包含，套餐、模型、key</text>
                 <!-- 接口3 -->
-                <rect x="530" y="398" width="340" height="152" rx="20" fill="#f4f5f7" stroke="#c9ccd3" stroke-width="2"/>
-                <text x="700" y="462" font-size="28" fill="#1f2329" text-anchor="middle">3、套餐超限额后</text>
-                <text x="700" y="504" font-size="28" fill="#1f2329" text-anchor="middle">消息提醒接口</text>
+                <rect x="530" y="400" width="366" height="172" rx="20" fill="#f4f5f7" stroke="#c9ccd3" stroke-width="2"/>
+                <text x="713" y="476" font-size="28" fill="#1f2329" text-anchor="middle">3、套餐超限额查询接</text>
+                <text x="713" y="516" font-size="28" fill="#1f2329" text-anchor="middle">口</text>
+                <!-- 接口4 -->
+                <rect x="530" y="598" width="366" height="172" rx="20" fill="#f4f5f7" stroke="#c9ccd3" stroke-width="2"/>
+                <text x="713" y="674" font-size="28" fill="#1f2329" text-anchor="middle">4、套餐限额用量</text>
+                <text x="713" y="714" font-size="28" fill="#1f2329" text-anchor="middle">动态查询接口</text>
             </svg>
         </div>
     </div>
