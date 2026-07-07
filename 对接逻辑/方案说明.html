@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WisCode × 智企 对接方案说明</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: #e9ecf2;
+            color: #1f2329;
+            padding: 24px;
+        }
+        .page {
+            max-width: 1480px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* ========== 顶部 IDE 模拟窗口 ========== */
+        .ide-window {
+            position: relative;
+            background: #fff;
+            border: 1px solid #d0d3d9;
+            border-radius: 10px;
+            overflow: visible;
+            display: flex;
+            min-height: 860px;
+            box-shadow: 0 4px 24px rgba(0,0,0,.08);
+        }
+
+        /* 左侧边栏 */
+        .sidebar {
+            width: 235px;
+            flex-shrink: 0;
+            border-right: 1px solid #e5e6eb;
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            background: #fbfbfc;
+            border-radius: 10px 0 0 10px;
+        }
+        .traffic {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+        .traffic .dot { width: 12px; height: 12px; border-radius: 50%; background: #c9ccd1; }
+        .traffic .win-btns { margin-left: 8px; display: flex; gap: 14px; color: #8a8f99; font-size: 14px; }
+        .traffic .update-btn {
+            margin-left: auto;
+            background: #1f6bff;
+            color: #fff;
+            font-size: 12px;
+            border-radius: 12px;
+            padding: 3px 12px;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 22px;
+        }
+        .brand .logo {
+            width: 30px; height: 30px;
+            background: #1f6bff;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 16px;
+        }
+        .side-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 8px;
+            font-size: 14px;
+            color: #3a3f47;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .side-item:hover { background: #f0f1f4; }
+        .side-item .chev { margin-left: auto; color: #b0b4bc; }
+        .side-group {
+            margin-top: 16px;
+            font-size: 12px;
+            color: #9aa0a8;
+            padding: 4px 8px;
+        }
+        .side-sub {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #3a3f47;
+            padding: 7px 8px 7px 26px;
+        }
+        .side-sub .time { color: #b0b4bc; font-size: 12px; }
+        .sidebar-bottom {
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px;
+            font-size: 14px;
+            color: #3a3f47;
+        }
+
+        /* 主区域 */
+        .main {
+            flex: 1;
+            position: relative;
+            padding: 40px 48px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .robot {
+            position: absolute;
+            top: 210px;
+            right: 60px;
+            font-size: 88px;
+            filter: drop-shadow(0 6px 12px rgba(31,107,255,.25));
+        }
+        .headline {
+            margin-top: 150px;
+            font-size: 44px;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+        .headline .cursor { color: #f5a623; }
+        .quota-warning {
+            position: relative;
+            margin-top: 14px;
+            background: #fde9c8;
+            color: #8a5a00;
+            font-size: 15px;
+            padding: 8px 20px;
+            border-radius: 6px;
+            border: 2px solid #e02020;
+        }
+        .quota-warning .buy { color: #1f6bff; font-weight: 600; }
+        .quota-warning .info-toggle {
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .quota-warning.info-open .info-panel { display: block; }
+
+        .chat-box {
+            margin-top: 22px;
+            width: 640px;
+            background: #f4f5f7;
+            border: 1px solid #e0e2e7;
+            border-radius: 16px;
+            padding: 18px 20px 14px;
+        }
+        .chat-input {
+            color: #a2a7af;
+            font-size: 15px;
+            padding-bottom: 30px;
+        }
+        .chat-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 14px;
+            color: #3a3f47;
+        }
+        .chat-toolbar .plus { font-size: 18px; color: #6b7078; }
+        .chat-toolbar .approve { color: #1f6bff; }
+        .chat-toolbar .right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .model-pill {
+            background: #e5e7ec;
+            border-radius: 14px;
+            padding: 4px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .send-btn {
+            width: 32px; height: 32px;
+            background: #c9ccd3;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff;
+        }
+        .project-entry {
+            margin-top: 16px;
+            align-self: flex-start;
+            margin-left: calc(50% - 320px);
+            font-size: 14px;
+            color: #3a3f47;
+        }
+
+        /* 模型下拉面板 */
+        .model-dropdown {
+            position: absolute;
+            top: 470px;
+            left: 50%;
+            transform: translateX(-8%);
+            width: 480px;
+            background: #fff;
+            border: 1px solid #e0e2e7;
+            border-radius: 14px;
+            box-shadow: 0 12px 40px rgba(0,0,0,.14);
+            padding: 16px 18px;
+            z-index: 5;
+        }
+        .search-model {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #a2a7af;
+            font-size: 14px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f0f1f4;
+        }
+        .auto-row {
+            padding: 12px 2px 14px;
+        }
+        .auto-row .auto-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 16px;
+            font-weight: 700;
+        }
+        .toggle {
+            width: 36px; height: 20px;
+            background: #d5d8de;
+            border-radius: 10px;
+            position: relative;
+        }
+        .toggle::after {
+            content: '';
+            position: absolute;
+            width: 16px; height: 16px;
+            background: #fff;
+            border-radius: 50%;
+            top: 2px; left: 2px;
+            box-shadow: 0 1px 3px rgba(0,0,0,.2);
+        }
+        .auto-desc { font-size: 13px; color: #8a8f99; margin-top: 4px; }
+
+        .model-group {
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-top: 8px;
+        }
+        .model-group.internal { border: 2px solid #e02020; }
+        .model-group.external { border: 2px solid #1414e0; }
+        .group-head {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            background: #f4f5f7;
+            border-radius: 6px;
+            padding: 8px 10px;
+        }
+        .group-head .count { color: #9aa0a8; font-weight: 400; font-size: 13px; }
+        .group-head .buy-link {
+            margin-left: auto;
+            color: #1f3dff;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .group-head .fold { color: #9aa0a8; margin-left: 6px; }
+        .model-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 15px;
+            padding: 10px 10px 2px;
+            color: #1f2329;
+        }
+        .model-item .info { color: #b0b4bc; font-size: 12px; }
+        .model-item .edit { margin-left: auto; color: #9aa0a8; font-size: 13px; }
+        .model-item .check { color: #1f2329; font-weight: 700; margin-left: 10px; }
+
+        /* 标注气泡 */
+        .callout {
+            background: #e5697a;
+            color: #fff;
+            font-size: 15px;
+            line-height: 1.7;
+            padding: 14px 18px;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.12);
+        }
+        .callout b { font-weight: 700; }
+        .callout .u { text-decoration: underline; }
+        .co-top {
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-45%);
+            width: 440px;
+            z-index: 6;
+        }
+        /* 内网模型说明按钮（样式与模型套餐页的说明按钮一致，位于红框外左侧） */
+        .model-group.internal { position: relative; }
+        .info-toggle {
+            position: absolute;
+            left: -86px;
+            top: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #ff6a5e, #e02020);
+            color: #fff;
+            border-radius: 20px;
+            padding: 5px 12px 5px 8px;
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1;
+            box-shadow: 0 2px 8px rgba(224,32,32,.45);
+            animation: doc-pulse 1.6s ease-in-out infinite;
+            z-index: 8;
+        }
+        .info-toggle::before { content: "说明"; order: 2; }
+        .info-toggle svg { display: block; }
+        /* 步骤序号角标 */
+        .info-toggle .step-badge,
+        .api-doc-toggle .step-badge {
+            position: absolute;
+            top: -16px;
+            right: -16px;
+            width: 32px; height: 32px;
+            background: #1f6bff;
+            color: #fff;
+            border: 3px solid #fff;
+            border-radius: 50%;
+            font-size: 19px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,.35);
+            order: 3;
+        }
+        @keyframes doc-pulse {
+            0%, 100% { box-shadow: 0 2px 8px rgba(224,32,32,.45); }
+            50% { box-shadow: 0 0 0 6px rgba(224,32,32,.18); }
+        }
+        .info-panel {
+            display: none;
+            position: absolute;
+            right: calc(100% + 96px);
+            top: 0;
+            width: 340px;
+            background: #e5697a;
+            color: #fff;
+            font-size: 14px;
+            line-height: 1.7;
+            padding: 12px 14px;
+            border-radius: 6px;
+            box-shadow: 0 6px 20px rgba(0,0,0,.18);
+            z-index: 9;
+        }
+        .model-group.internal.info-open .info-panel { display: block; }
+        /* ========== 对接接口说明（可展开，悬浮于品牌右侧） ========== */
+        .api-doc-section {
+            position: absolute;
+            top: 52px;
+            left: 255px;
+            z-index: 30;
+            text-align: left;
+        }
+        .api-doc-toggle {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #ff7a00, #ff2d55);
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            padding: 12px 24px;
+            border-radius: 30px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(255,45,85,.45);
+            transition: transform .15s, box-shadow .15s;
+        }
+        .api-doc-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255,45,85,.55);
+        }
+        .api-doc-toggle .icon-badge {
+            width: 26px; height: 26px;
+            background: rgba(255,255,255,.25);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px;
+        }
+        .api-doc-toggle .chevron {
+            font-size: 13px;
+            transition: transform .25s;
+        }
+        .api-doc-section.open .api-doc-toggle .chevron { transform: rotate(180deg); }
+
+        /* WISCode操作按钮（在对接接口说明按钮下方） */
+        .wiscode-op-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 14px;
+            background: linear-gradient(135deg, #2f7bff, #1f3fd8);
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            padding: 12px 24px;
+            border-radius: 30px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(31,63,216,.45);
+            transition: transform .15s, box-shadow .15s;
+        }
+        .wiscode-op-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(31,63,216,.55);
+        }
+        .wiscode-op-btn .icon-badge {
+            width: 26px; height: 26px;
+            background: rgba(255,255,255,.25);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px;
+        }
+
+        .api-doc-panel {
+            display: none;
+            position: absolute;
+            top: calc(100% + 14px);
+            left: 0;
+            width: 1150px;
+            max-width: calc(100vw - 320px);
+            background: #fff;
+            border: 1px solid #d0d3d9;
+            border-radius: 12px;
+            padding: 32px 36px 40px;
+            box-shadow: 0 16px 48px rgba(0,0,0,.25);
+            text-align: left;
+            z-index: 40;
+        }
+        .flow-svg { display: block; max-width: 100%; height: auto; }
+        .api-doc-section.open .api-doc-panel { display: block; }
+
+        .api-doc-tip {
+            background: #e5697a;
+            color: #fff;
+            font-size: 15px;
+            line-height: 1.7;
+            padding: 14px 18px;
+            border-radius: 6px;
+            margin-bottom: 32px;
+        }
+        .api-doc-tip .hl {
+            color: #cfe0ff;
+            text-decoration: underline;
+            font-weight: 700;
+        }
+
+        .flow-block-title {
+            font-size: 17px;
+            font-weight: 700;
+            margin: 8px 0 20px;
+            color: #1f2329;
+        }
+
+        /* 流程图通用 */
+        .flow-node {
+            background: #f4f5f7;
+            border: 1px solid #c9ccd3;
+            border-radius: 10px;
+            padding: 14px 20px;
+            font-size: 16px;
+            text-align: center;
+            line-height: 1.5;
+        }
+        .arrow-h {
+            flex: 0 0 46px;
+            height: 2px;
+            background: #9aa0a8;
+            position: relative;
+            align-self: center;
+        }
+        .arrow-h::after {
+            content: '';
+            position: absolute;
+            right: -1px; top: -4px;
+            border: 5px solid transparent;
+            border-left-color: #9aa0a8;
+        }
+        .arrow-h.rev::after {
+            right: auto; left: -1px;
+            border: 5px solid transparent;
+            border-right-color: #9aa0a8;
+        }
+
+        /* 流程图一：用户流程 */
+        .flow-user-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0;
+            margin-bottom: 10px;
+        }
+        .actor {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+        .actor .figure { font-size: 40px; }
+        .diamond-wrap {
+            position: relative;
+            width: 190px;
+            height: 190px;
+            flex-shrink: 0;
+        }
+        .diamond {
+            position: absolute;
+            inset: 20px;
+            background: #f4f5f7;
+            border: 1px solid #c9ccd3;
+            transform: rotate(45deg);
+            border-radius: 8px;
+        }
+        .diamond-text {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 15px;
+            line-height: 1.5;
+            padding: 0 30px;
+        }
+        .branch-col {
+            display: flex;
+            flex-direction: column;
+            gap: 60px;
+            margin-left: 10px;
+        }
+        .branch {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .branch .tag-yes { color: #12b76a; font-weight: 700; font-size: 16px; }
+        .branch .tag-no { color: #e02020; font-weight: 700; font-size: 16px; }
+        .flow-note {
+            margin-top: 6px;
+            font-size: 14px;
+            color: #3a3f47;
+            text-align: center;
+            line-height: 1.7;
+        }
+        .return-label {
+            font-size: 14px;
+            color: #3a3f47;
+            margin: 14px 0 0 120px;
+        }
+
+        /* 流程图二：接口图 */
+        .flow-right-inner {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin-top: 36px;
+        }
+        .wiscode-node {
+            flex-shrink: 0;
+            width: 150px;
+            padding: 40px 10px;
+        }
+        .api-col {
+            display: flex;
+            flex-direction: column;
+            gap: 26px;
+            flex-shrink: 0;
+        }
+        .api-col .flow-node { width: 220px; }
+
+    </style>
+</head>
+<body>
+<div class="page">
+
+    <!-- ============ IDE 模拟窗口 ============ -->
+    <div class="ide-window">
+
+        <!-- 左侧栏 -->
+        <div class="sidebar">
+            <div class="traffic">
+                <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                <span class="win-btns">◫ ← →</span>
+                <span class="update-btn">更新</span>
+            </div>
+            <div class="brand"><span class="logo">✦</span>智效 WisCode</div>
+            <div class="side-item">⊕ 新对话</div>
+            <div class="side-item">🔍 搜索</div>
+            <div class="side-item">🧩 插件</div>
+            <div class="side-item">⏱ 自动化</div>
+            <div class="side-item">▦ 更多 <span class="chev">›</span></div>
+            <div class="side-group">项目</div>
+            <div class="side-item">📁 对账工具</div>
+            <div class="side-sub"><span>帮我在对账工具页...</span><span class="time">1周</span></div>
+            <div class="side-group">对话</div>
+            <div class="sidebar-bottom">
+                <span>⚙ 设置</span><span>▯</span>
+            </div>
+        </div>
+
+        <!-- 主区域 -->
+        <div class="main">
+            <div class="robot">🤖</div>
+
+            <div class="headline">让我帮你实现想法<span class="cursor">_</span></div>
+            <div class="quota-warning" id="quotaWarning">
+                <span class="info-toggle" title="点击查看说明" onclick="document.getElementById('quotaWarning').classList.toggle('info-open'); event.stopPropagation();"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-5"/><circle cx="12" cy="8.2" r=".6" fill="currentColor"/></svg><span class="step-badge">2</span></span>
+                当前套餐已超限额，请<span class="buy" style="cursor:pointer;" onclick="location.href='../实施方案/智企AI计划.html'; event.stopPropagation();">购买</span>套餐或加油包
+                <div class="info-panel" onclick="event.stopPropagation();">当套餐超限额时，智企要给wiscode发消息，wiscode进行对应提醒</div>
+            </div>
+
+            <div class="chat-box">
+                <div class="chat-input">输入 / 调用命令，@ 选择文件，或向 智效 提问...</div>
+                <div class="chat-toolbar">
+                    <span class="plus">＋</span>
+                    <span class="approve">🛡 替我审批 ⌄</span>
+                    <span>连接 ⌄</span>
+                    <span class="right">
+                        <span class="model-pill">GPT-5.5 ⌃</span>
+                        <span>🎙</span>
+                        <span class="send-btn">➤</span>
+                    </span>
+                </div>
+            </div>
+            <div class="project-entry">🗂 进入项目工作 ⌄</div>
+
+            <!-- 模型下拉面板 -->
+            <div class="model-dropdown">
+                <div class="search-model">🔍 搜索接口模型</div>
+                <div class="auto-row">
+                    <div class="auto-head">Auto <span class="toggle"></span></div>
+                    <div class="auto-desc">平衡速度与质量的模型，推荐使用</div>
+                </div>
+                <div class="model-group internal" id="internalGroup">
+                    <span class="info-toggle" title="点击查看说明" onclick="document.getElementById('internalGroup').classList.toggle('info-open')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-5"/><circle cx="12" cy="8.2" r=".6" fill="currentColor"/></svg><span class="step-badge">1</span></span>
+                    <div class="group-head">
+                        内网模型 <span class="count">3 个</span>
+                        <span class="buy-link" style="cursor:pointer;" onclick="location.href='../实施方案/智企AI计划.html'; event.stopPropagation();">购买套餐</span><span class="fold">⌄</span>
+                    </div>
+                    <div class="info-panel">
+                        <b>内外模型：</b><br>
+                        1、智企给wiscode的用户每个成员、每个月默认开通内、外两个套餐。分别承接现在wiscode里的内外模型。<br><br>
+                        <b>更多套餐：</b><br>
+                        2、除了内外模型之外，智企向wiscode提供成员在智企购买的套餐信息，由WISCode基于套餐和模型拆分到固定的内、外模型下
+                    </div>
+                    <div class="model-item">360-minimax-m2.7 <span class="info">ⓘ</span></div>
+                    <div class="model-item">360-glm-5.2 <span class="info">ⓘ</span></div>
+                    <div class="model-item">360-deepseek-v4-flash <span class="info">ⓘ</span></div>
+                </div>
+                <div class="model-group external">
+                    <div class="group-head">
+                        外网模型 <span class="count">2 个</span>
+                        <span class="buy-link" style="cursor:pointer;" onclick="location.href='../实施方案/智企AI计划.html'; event.stopPropagation();">购买套餐</span><span class="fold">⌄</span>
+                    </div>
+                    <div class="model-item">GPT-5.5 <span class="edit">编辑</span><span class="check">✓</span></div>
+                    <div class="model-item">Claude-4.8-opus</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ============ 对接接口说明（可展开） ============ -->
+    <div class="api-doc-section" id="apiDocSection">
+        <button class="api-doc-toggle" onclick="document.getElementById('apiDocSection').classList.toggle('open')">
+            <span class="icon-badge">🔌</span>
+            对接接口说明
+            <span class="chevron">▼</span>
+            <span class="step-badge">3</span>
+        </button>
+        <br>
+        <button class="wiscode-op-btn" onclick="location.href='../实施方案/模型套餐.html'">
+            <span class="icon-badge">⚙️</span>
+            WISCode操作
+        </button>
+
+        <div class="api-doc-panel">
+            <!-- 提示文案 -->
+            <div class="api-doc-tip">
+                智企把套餐的信息，包括：套餐名称、套餐里的模型、<span class="hl">当前是否已超限额</span>。等
+            </div>
+
+            <!-- 流程图一：用户打开 Wiscode 判断流程 -->
+            <div class="flow-block-title">用户套餐初始化流程</div>
+            <svg class="flow-svg" width="1100" height="430" viewBox="0 0 1408 552" fill="none" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif">
+                <!-- 用户 -->
+                <circle cx="42" cy="182" r="13" stroke="#8a8f99" stroke-width="2"/>
+                <path d="M42 195 v40 M14 210 h56 M42 235 l-22 40 M42 235 l22 40" stroke="#8a8f99" stroke-width="2" stroke-linecap="round"/>
+                <text x="42" y="312" font-size="24" fill="#1f2329" text-anchor="middle">用户</text>
+                <!-- 用户 -> 打开Wiscode -->
+                <line x1="80" y1="224" x2="188" y2="224" stroke="#9aa0a8" stroke-width="2"/>
+                <path d="M200 224 l-14 -8 v16 z" fill="#9aa0a8"/>
+                <!-- 打开Wiscode -->
+                <rect x="202" y="126" width="296" height="195" rx="18" fill="#f4f5f7" stroke="#c9ccd3" stroke-width="2"/>
+                <text x="350" y="205" font-size="28" fill="#1f2329" text-anchor="middle">打开</text>
+                <text x="350" y="258" font-size="28" fill="#1f2329" text-anchor="middle">Wiscode</text>
+                <!-- 说明文字 -->
+                <text x="350" y="388" font-size="26" fill="#3a3f47" text-anchor="middle">Wiscode</text>
+                <text x="350" y="428" font-size="26" fill="#3a3f47" text-anchor="middle">存每个用户的内外套餐</text>
+                <text x="350" y="468" font-size="26" fill="#3a3f47" text-anchor="middle">并定时查询更新</text>
+                <!-- 打开Wiscode -> 菱形 -->
+                <line x1="498" y1="224" x2="556" y2="224" stroke="#9aa0a8" stroke-width="2"/>
+                <path d="M568 224 l-14 -8 v16 z" fill="#9aa0a8"/>
+                <!-- 菱形 -->
+                <path d="M740 128 L916 224 L740 320 L564 224 Z" fill="#f4f5f7" stroke="#c9ccd3" stroke-width="2" stroke-linejoin="round"/>
+                <text x="740" y="212" font-size="26" fill="#1f2329" text-anchor="middle">当前用户是否有</text>
+                <text x="740" y="252" font-size="26" fill="#1f2329" text-anchor="middle">内外套餐?</text>
+                <!-- 是 分支 -->
+                <path d="M740 128 V72 H1090" stroke="#9aa0a8" stroke-width="2" fill="none"/>
+                <path d="M1102 72 l-14 -8 v16 z" fill="#9aa0a8"/>
+                <text x="895" y="60" font-size="28" font-weight="700" fill="#12b76a" text-anchor="middle">是</text>
+                <rect x="1104" y="8" width="298" height="128" rx="18" fill="#f4f5f7" stroke="#c9ccd3" stroke-width="2"/>
+                <text x="1253" y="82" font-size="28" fill="#1f2329" text-anchor="middle">正常使用Wiscode</text>
+                <!-- 否 分支 -->
+                <path d="M740 320 V376 H1090" stroke="#9aa0a8" stroke-width="2" fill="none"/>
+                <path d="M1102 376 l-14 -8 v16 z" fill="#9aa0a8"/>
+                <text x="895" y="366" font-size="28" font-weight="700" fill="#e02020" text-anchor="middle">否</text>
+                <rect x="1104" y="308" width="298" height="136" rx="18" fill="#f4f5f7" stroke="#c9ccd3" stroke-width="2"/>
+                <text x="1253" y="362" font-size="28" fill="#1f2329" text-anchor="middle">调智企</text>
+                <text x="1253" y="404" font-size="28" fill="#1f2329" text-anchor="middle">自动生成内外套餐</text>
+                <!-- 创建好后返回 -->
+                <path d="M1253 444 V524 H350 V496" stroke="#9aa0a8" stroke-width="2" fill="none"/>
+                <path d="M350 486 l-8 14 h16 z" fill="#9aa0a8"/>
+                <text x="830" y="514" font-size="26" fill="#3a3f47" text-anchor="middle">创建好后返回</text>
+            </svg>
+
+            <!-- 流程图二：智企提供给 Wiscode 的接口 -->
+            <div class="flow-block-title" style="margin-top:44px;">智企提供的对接接口</div>
+            <svg class="flow-svg" width="620" height="390" viewBox="0 0 890 558" fill="none" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif">
+                <!-- Wiscode -->
+                <rect x="4" y="182" width="294" height="196" rx="20" fill="#f4f5f7" stroke="#c9ccd3" stroke-width="2"/>
+                <text x="151" y="292" font-size="30" fill="#1f2329" text-anchor="middle">Wiscode</text>
+                <!-- 汇聚线 -->
+                <path d="M528 80 H418 V280 M528 280 H418 M528 470 H418 V280" stroke="#9aa0a8" stroke-width="2" fill="none"/>
+                <line x1="418" y1="280" x2="316" y2="280" stroke="#9aa0a8" stroke-width="2"/>
+                <path d="M304 280 l14 -8 v16 z" fill="#9aa0a8"/>
+                <!-- 接口1 -->
+                <rect x="530" y="4" width="340" height="152" rx="20" fill="#f4f5f7" stroke="#c9ccd3" stroke-width="2"/>
+                <text x="700" y="70" font-size="28" fill="#1f2329" text-anchor="middle">1、成员套餐列表</text>
+                <text x="700" y="112" font-size="28" fill="#1f2329" text-anchor="middle">查询接口</text>
+                <!-- 接口2 -->
+                <rect x="530" y="204" width="340" height="152" rx="20" fill="#f4f5f7" stroke="#c9ccd3" stroke-width="2"/>
+                <text x="700" y="270" font-size="28" fill="#1f2329" text-anchor="middle">2、套餐购买后</text>
+                <text x="700" y="312" font-size="28" fill="#1f2329" text-anchor="middle">回调接口</text>
+                <!-- 接口3 -->
+                <rect x="530" y="398" width="340" height="152" rx="20" fill="#f4f5f7" stroke="#c9ccd3" stroke-width="2"/>
+                <text x="700" y="462" font-size="28" fill="#1f2329" text-anchor="middle">3、套餐超限额后</text>
+                <text x="700" y="504" font-size="28" fill="#1f2329" text-anchor="middle">消息提醒接口</text>
+            </svg>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

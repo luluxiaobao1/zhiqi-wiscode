@@ -223,8 +223,9 @@
     border: 1px solid #e8eaed; border-radius: 10px; background: #fff;
     box-shadow: 0 1px 3px rgba(0,0,0,0.03);
     outline: 2.5px solid #e02020; outline-offset: 2px;
-    overflow: hidden;
+    overflow-x: auto;
   }
+  .pkg-table { min-width: 860px; }
   .pkg-table { width: 100%; border-collapse: collapse; font-size: 14px; }
   .pkg-table th {
     text-align: left; padding: 12px 24px; background: #fafbfc;
@@ -239,10 +240,9 @@
   .pkg-table tbody tr:hover { background: #fafbfc; }
   .pkg-table .pkg-cell { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
   .pkg-table .num-cell { font-weight: 600; }
+  .usage-cell { display: flex; align-items: center; gap: 10px; }
 
   .model-row { display: flex; justify-content: space-between; align-items: center; margin-top: 18px; margin-bottom: 8px; font-size: 14px; }
-  .red-box { outline: 2.5px solid #e02020; outline-offset: 0; border-radius: 8px; padding: 0 10px 12px; margin-top: 12px; }
-  .red-box .model-row { margin-top: 12px; }
   .model-row .label { display: flex; align-items: center; gap: 8px; color: #3a3f45; }
   .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
   .dot.purple { background: #8b7cf0; }
@@ -365,7 +365,7 @@
             <span class="doc-pop">智企的套餐是积分，智企只能返回调用的token数量</span>
           </span>
         </span>
-        <span class="num">0 / 4060M</span>
+        <span class="num">0 / 4060积分</span>
       </div>
       <div class="bar"><span class="fill" style="width:0%"></span></div>
       <div class="bar-percent">0%</div>
@@ -375,78 +375,56 @@
         <div class="quota-card">
           <div class="quota-head">
             <span class="name">普通项目</span>
-            <span class="num">0 / 2010M</span>
+            <span class="num">0 / 2010积分</span>
           </div>
           <div class="bar"><span class="fill" style="width:0%"></span></div>
           <div class="bar-percent">0%</div>
 
           <div class="model-row">
             <span class="label"><span class="dot purple"></span>Auto 模型</span>
-            <span class="val">0 / 1000M&nbsp;&nbsp;0%</span>
+            <span class="val">0 / 1000积分&nbsp;&nbsp;0%</span>
           </div>
           <div class="thin-bar"></div>
 
           <div class="model-row">
             <span class="label"><span class="dot orange"></span>外网模型</span>
-            <span class="val">0 / 10M&nbsp;&nbsp;0%</span>
+            <span class="val">0 / 10积分&nbsp;&nbsp;0%</span>
           </div>
           <div class="thin-bar"></div>
 
           <div class="model-row">
             <span class="label"><span class="dot green"></span>内网模型</span>
-            <span class="val">0 / 1000M&nbsp;&nbsp;0%</span>
+            <span class="val">0 / 1000积分&nbsp;&nbsp;0%</span>
           </div>
           <div class="thin-bar"></div>
-
-          <div class="red-box">
-            <div class="model-row">
-              <span class="label"><span class="dot blue"></span>套餐名称1</span>
-              <span class="val">0</span>
-            </div>
-            <div class="thin-bar"></div>
-
-            <div class="model-row">
-              <span class="label"><span class="dot pink"></span>套餐名称2</span>
-              <span class="val">0</span>
-            </div>
-            <div class="thin-bar"></div>
-          </div>
         </div>
 
         <!-- 极库云项目 -->
         <div class="quota-card">
           <div class="quota-head">
             <span class="name">极库云项目</span>
-            <span class="num">0 / 2050M</span>
+            <span class="num">0 / 2050积分</span>
           </div>
           <div class="bar"><span class="fill" style="width:0%"></span></div>
           <div class="bar-percent">0%</div>
 
           <div class="model-row">
             <span class="label"><span class="dot purple"></span>Auto 模型</span>
-            <span class="val">0 / 1000M&nbsp;&nbsp;0%</span>
+            <span class="val">0 / 1000积分&nbsp;&nbsp;0%</span>
           </div>
           <div class="thin-bar"></div>
 
           <div class="model-row">
             <span class="label"><span class="dot orange"></span>外网模型</span>
-            <span class="val">0 / 50M&nbsp;&nbsp;0%</span>
+            <span class="val">0 / 50积分&nbsp;&nbsp;0%</span>
           </div>
           <div class="thin-bar"></div>
 
           <div class="model-row">
             <span class="label"><span class="dot green"></span>内网模型</span>
-            <span class="val">0 / 1000M&nbsp;&nbsp;0%</span>
+            <span class="val">0 / 1000积分&nbsp;&nbsp;0%</span>
           </div>
           <div class="thin-bar"></div>
-
-          <div class="red-box">
-            <div class="model-row">
-              <span class="label"><span class="dot blue"></span>套餐名称1</span>
-              <span class="val">0</span>
-            </div>
-            <div class="thin-bar"></div>
-          </div>
         </div>
       </div>
     </div>
@@ -462,24 +440,54 @@
       <table class="pkg-table">
         <thead>
           <tr>
-            <th style="width: 40%;">套餐</th>
-            <th style="width: 20%;">调用次数</th>
-            <th style="width: 20%;">输入Token</th>
-            <th style="width: 20%;">输出Token</th>
+            <th style="width: 25%;">套餐</th>
+            <th style="width: 25%;">每五小时额度(积分)</th>
+            <th style="width: 25%;">每周额度(积分)</th>
+            <th style="width: 25%;">每月额度(积分)</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td><span class="pkg-cell"><span class="dot blue"></span>套餐名称1</span></td>
-            <td class="num-cell">12</td>
-            <td class="num-cell">860K</td>
-            <td class="num-cell">9.2K</td>
+            <td>
+              <div class="usage-cell">
+                <div class="quota-bar"><span class="fill" style="width:12%"></span></div>
+                <span class="quota-value">2,400/20,000 (12%)</span>
+              </div>
+            </td>
+            <td>
+              <div class="usage-cell">
+                <div class="quota-bar"><span class="fill" style="width:18%"></span></div>
+                <span class="quota-value">7,200/40,000 (18%)</span>
+              </div>
+            </td>
+            <td>
+              <div class="usage-cell">
+                <div class="quota-bar"><span class="fill" style="width:9%"></span></div>
+                <span class="quota-value">7,200/80,000 (9%)</span>
+              </div>
+            </td>
           </tr>
           <tr>
             <td><span class="pkg-cell"><span class="dot pink"></span>套餐名称2</span></td>
-            <td class="num-cell">7</td>
-            <td class="num-cell">140K</td>
-            <td class="num-cell">4.8K</td>
+            <td>
+              <div class="usage-cell">
+                <div class="quota-bar"><span class="fill" style="width:40%"></span></div>
+                <span class="quota-value">400/1,000 (40%)</span>
+              </div>
+            </td>
+            <td>
+              <div class="usage-cell">
+                <div class="quota-bar"><span class="fill" style="width:30%"></span></div>
+                <span class="quota-value">600/2,000 (30%)</span>
+              </div>
+            </td>
+            <td>
+              <div class="usage-cell">
+                <div class="quota-bar"><span class="fill" style="width:15%"></span></div>
+                <span class="quota-value">600/4,000 (15%)</span>
+              </div>
+            </td>
           </tr>
         </tbody>
       </table>
